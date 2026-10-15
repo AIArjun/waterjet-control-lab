@@ -352,7 +352,7 @@ class Simulator:
 
     def csv(self) -> str:
         stream = io.StringIO(newline="")
-        writer = csv.DictWriter(stream, fieldnames=list(self.record()))
+        writer = csv.DictWriter(stream, fieldnames=list(self.record()), lineterminator="\n")
         writer.writeheader()
         writer.writerows(self.records())
         return stream.getvalue()

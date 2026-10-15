@@ -354,7 +354,7 @@ class Console(QMainWindow):
             self, "Export simulation", "waterjet-simulation.csv", "CSV (*.csv)"
         )
         if filename:
-            Path(filename).write_text(self.sim.csv(), encoding="utf-8")
+            Path(filename).write_bytes(self.sim.csv().encode("utf-8"))
 
 
 def main():

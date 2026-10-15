@@ -103,12 +103,12 @@
   ],
   "all_passed": true,
   "trace_sha256": {
-    "heading-hold.csv": "c7599ddf7a0122fbbb237df0dade727ff3cbad8f22480e65765eb69c083a4432",
-    "low_pressure.csv": "5dbcbbea6b167e163443fe28ecae5352427a6f916c535e0d7f5b3af9747e2e27",
-    "overheat.csv": "5a43fda2dcc143c6e4ee2ef4e3cb45c44df3a065c3c56b101afb0351274658ee",
-    "comms_loss.csv": "d98ab521c2e7e3bea49ca5e429de79d328812fb40b205515612fc4745fbfecd5",
-    "sensor_dropout.csv": "96cbd2cfeeb74a490fe779aa22918bcd0ca7a0242512bc6f2d4eec1cbb4e8d3f",
-    "port_stuck.csv": "a2ca1a003931b51f16cca82a61ff447cd4929c06978b123365bdc0da6de937c1",
-    "emergency-stop.csv": "0c065d65c070425f23931ac79abcb66e25851d18ab123e3714a2f0a289198966"
+    "heading-hold.csv": "7cee326831801af408cb8b74710017aec99d6c702bac4df0a8008d642dbf7271",
+    "low_pressure.csv": "d10f08543abb4d75bcc4e54b787e0c2c862b5c201fa1b9a5bc4df7072c2291f8",
+    "overheat.csv": "52b50c396550c5c1a5cd92dfd055c83c2c096b15f2cb8b8cf960be6ed45341c7",
+    "comms_loss.csv": "fd14e7dc05abdbff5323ff351e0e21f1e003be5963baf70ec44c412c92ba7d3e",
+    "sensor_dropout.csv": "be61ed713d762e92f793264b82af9625950b7880d92323bc715da4c2f468921b",
+    "port_stuck.csv": "64b677a5e4615c22d7dbaa39917e4e470044d1f9f721f85af7a5213df49439fb",
+    "emergency-stop.csv": "4772cab9eeefdc93a212e0b82100bec37bb2fe3f6cbbc2b9b114f5dabe324d00"
   }
 }
