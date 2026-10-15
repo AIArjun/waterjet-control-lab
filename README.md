@@ -57,6 +57,8 @@ For a stuck-actuator demonstration, run at steady thrust, inject **Port actuator
 
 ## Verification
 
+**First verified release:** 53 pytest cases passed locally on Windows and in GitHub Actions on both Windows and Ubuntu. All seven measured scenarios passed on both CI platforms. Current runs and downloadable evidence are available in [GitHub Actions](https://github.com/AIArjun/waterjet-control-lab/actions). A passing workflow does not validate real hardware or the draft Structured Text block.
+
 ```bash
 python -m pytest -q
 ruff check .

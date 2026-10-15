@@ -1,0 +1,16 @@
+{
+  "date": "2026-10-15",
+  "target": "http://127.0.0.1:8787",
+  "scope": "Interactive browser checks of the running local application, separate from pytest and PLC validation",
+  "checked": [
+    "Neutral Arm then Run enables the controller; range control changes thrust demand",
+    "Injected low pressure latches LOW_PRESSURE and FAULT with zero commanded thrust",
+    "Clear pressure, Neutral, Reset returns to DISARMED without automatic restart",
+    "Emergency-stop scenario followed by Release stop remains E_STOP",
+    "Heading scenario loads target 030 degrees and displays live vessel movement",
+    "Phone-sized viewport retains Pause, Export and the scenario selector",
+    "Mobile scenario selector loads the heading scenario; measured content width equals visible width (375 px)"
+  ],
+  "screenshots": ["browser-console.png", "browser-mobile.png"],
+  "not_checked": ["Public Render deployment", "Docker build", "PLC runtime", "Real hardware"]
+}

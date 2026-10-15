@@ -10,7 +10,7 @@ The running controller is Python. The `.st` file in `plc/` is a **draft referenc
 
 ## CODESYS exercise
 
-1. Create a local Standard Project and add a Structured Text function block named `FB_Permissives`. Paste its declaration and implementation into the corresponding editor sections. The file includes instructions identifying those sections.
+1. Create a local Standard Project and add a Structured Text function block named `FB_Permissives`. Replace the declaration pane with the header through the final `END_VAR`. In the implementation pane paste `ArmEdge := ...` through the `EnableThrust := ...;` assignment. Omit the final `END_FUNCTION_BLOCK` wrapper, which is for the standalone source file, not the IDE implementation pane.
 2. Add an instance in `PLC_PRG`, call it from a cyclic 50 ms task and create watch variables for its inputs and outputs.
 3. Build and resolve compiler diagnostics for the selected toolchain. This reference deliberately avoids fieldbus addresses and devices.
 4. Enter simulation mode using the official documentation. Toggle momentary button inputs back to false between presses, and observe Mode, TripLatched and EnableThrust.
