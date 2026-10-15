@@ -21,6 +21,8 @@ def session(client):
 def test_home_assets_health_and_security_headers(client):
     page = client.get("/")
     assert page.status_code == 200 and "Vessel control console" in page.text
+    preview = client.head("/")
+    assert preview.status_code == 200 and not preview.content
     assert "frame-ancestors 'none'" in page.headers["content-security-policy"]
     assert client.get("/static/app.js").status_code == 200
     assert client.get("/static/style.css").status_code == 200

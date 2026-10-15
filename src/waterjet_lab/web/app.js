@@ -3,6 +3,7 @@ const $ = (id) => document.getElementById(id);
 let session = null,
   state = null,
   paused = false,
+  expired = false,
   controlMode = "manual",
   trail = [],
   trend = [];
@@ -19,12 +20,14 @@ function request(path, body, method = "POST") {
       signal: AbortSignal.timeout(6000),
     });
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(
-        typeof error.detail === "string"
-          ? error.detail
+      const details = await response.json().catch(() => ({}));
+      const error = new Error(
+        typeof details.detail === "string"
+          ? details.detail
           : "Request rejected; check input values.",
       );
+      if (response.status === 404 && session) endSession();
+      throw error;
     }
     return response.status === 204 ? null : response.json();
   });
@@ -35,6 +38,23 @@ const endpoint = (suffix) => `/api/sessions/${session}/${suffix}`;
 function feedback(message, alarm = false) {
   $("notice").textContent = message;
   $("notice").classList.toggle("alarm", alarm);
+}
+function endSession() {
+  expired = true;
+  paused = true;
+  session = null;
+  $("pause").textContent = "↻ Restart";
+  $("connection").textContent = "Session ended";
+  $("mode").textContent = "ENDED";
+  $("mode").className = "mode FAULT";
+  for (const control of document.querySelectorAll(
+    "[data-action], [data-fault], [data-scenario], input, #scenario-picker, #export, #neutral, #manual-mode, #heading-mode",
+  ))
+    control.disabled = true;
+  feedback(
+    "This session ended after inactivity or a server restart. Select Restart to begin a new simulation with neutral controls.",
+    true,
+  );
 }
 function command() {
   return {
@@ -65,6 +85,7 @@ function labels() {
     `${String($("target-heading").value).padStart(3, "0")}°`;
 }
 function render(s) {
+  if (expired) return;
   state = s;
   $("speed").textContent = (
     Math.hypot(s.surge_mps, s.sway_mps) * 1.943844
@@ -339,6 +360,7 @@ function drawTrend() {
   c.fillText(`${(start + duration).toFixed(0)} s`, right - 25, h - 5);
 }
 async function mutate(suffix, body) {
+  if (expired) return;
   try {
     const result = await request(endpoint(suffix), body);
     render(result.state || result);
@@ -348,7 +370,7 @@ async function mutate(suffix, body) {
         true,
       );
   } catch (error) {
-    feedback(error.message, true);
+    if (!expired) feedback(error.message, true);
   }
 }
 async function pump() {
@@ -358,8 +380,10 @@ async function pump() {
       $("connection").textContent = "● Connected";
     }
   } catch (error) {
-    $("connection").textContent = "○ Connection interrupted";
-    feedback(error.message, true);
+    if (!expired) {
+      $("connection").textContent = "○ Connection interrupted";
+      feedback(error.message, true);
+    }
   }
   setTimeout(pump, 100);
 }
@@ -386,6 +410,7 @@ for (const box of document.querySelectorAll("[data-fault]"))
     mutate("fault", { fault: box.dataset.fault, enabled: box.checked }),
   );
 async function loadScenario(name) {
+  if (expired) return;
   try {
     const result = await request(endpoint("scenario"), { name });
     trail = [];
@@ -402,7 +427,7 @@ async function loadScenario(name) {
       other.classList.toggle("active", other.dataset.scenario === name);
     $("scenario-picker").value = name;
   } catch (error) {
-    feedback(error.message, true);
+    if (!expired) feedback(error.message, true);
   }
 }
 for (const button of document.querySelectorAll("[data-scenario]"))
@@ -411,6 +436,10 @@ $("scenario-picker").addEventListener("change", () =>
   loadScenario($("scenario-picker").value),
 );
 $("pause").addEventListener("click", () => {
+  if (expired) {
+    window.location.reload();
+    return;
+  }
   paused = !paused;
   $("pause").textContent = paused ? "▶ Resume" : "Ⅱ Pause";
   $("connection").textContent = paused ? "Ⅱ Simulation paused" : "● Connected";

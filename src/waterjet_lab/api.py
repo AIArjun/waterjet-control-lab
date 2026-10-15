@@ -210,6 +210,7 @@ def delete_session(session_id: str):
     return Response(status_code=204)
 
 
+@app.head("/", include_in_schema=False)
 @app.get("/")
 def home():
     return FileResponse(WEB / "index.html")
