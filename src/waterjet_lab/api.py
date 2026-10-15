@@ -23,7 +23,8 @@ from .scenarios import SCENARIOS, scenario
 
 WEB = Path(__file__).parent / "web"
 app = FastAPI(title="Waterjet Control Lab", version=__version__, docs_url=None, redoc_url=None)
-MAX_SESSIONS = 64
+# Each session retains up to 6000 telemetry rows. Leave headroom on a 512 MB host.
+MAX_SESSIONS = 16
 SESSION_TTL_S = 1800
 
 
@@ -112,7 +113,13 @@ async def headers(request, call_next):
 
 @app.get("/healthz")
 def healthz():
-    return {"status": "ok", "version": __version__, "simulation_only": True}
+    return {
+        "status": "ok",
+        "version": __version__,
+        "simulation_only": True,
+        "session_limit": MAX_SESSIONS,
+        "commit": os.getenv("RENDER_GIT_COMMIT", "local"),
+    }
 
 
 @app.post("/api/sessions", status_code=201)

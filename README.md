@@ -2,6 +2,10 @@
 
 **A marine control simulator built to make failures visible, recovery deliberate, and verification repeatable.**
 
+**[Open the live demo](https://waterjet-control-lab.onrender.com/)** · [Verification runs](https://github.com/AIArjun/waterjet-control-lab/actions)
+
+No login, passcode or hardware is required. The free Render instance may take around a minute to wake after inactivity. Choose **Heading hold** to start a scenario, or use Neutral → Arm → Run to explore manually.
+
 Operate a simulated twin-jet vessel from a native **Qt/PySide6 HMI** or a browser console. Apply thrust, hold a heading, interrupt commands, freeze an actuator, and inspect exactly why the controller inhibited its outputs.
 
 This is an independent educational project. It is not a Marine Jet Power product, a calibrated vessel digital twin, or a certified safety controller. All sensors and actuators are simulated.
