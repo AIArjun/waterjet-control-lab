@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Waterjet Control Lab</title><meta name="description" content="An interactive marine control and verification simulator. No hardware required."><link rel="stylesheet" href="/static/style.css"><script defer src="/static/app.js"></script></head>
+<body>
+<aside class="rail">
+  <a class="brand" href="/" aria-label="Waterjet Control Lab home"><span class="brand-mark">W<span>∿</span></span><span>WATERJET<br><small>CONTROL LAB</small></span></a>
+  <div class="rail-kicker">WORKSPACE</div><div class="nav-active"><span>◈</span> Operator console <span class="nav-dot"></span></div>
+  <div class="rail-kicker scenario-label">VERIFICATION SCENARIOS</div>
+  <div id="scenarios" class="scenarios">
+    <button data-scenario="harbor"><span>01</span> Harbor manoeuvre</button>
+    <button data-scenario="heading"><span>02</span> Heading hold</button>
+    <button data-scenario="pressure"><span>03</span> Pressure loss</button>
+    <button data-scenario="watchdog"><span>04</span> Link watchdog</button>
+    <button data-scenario="estop"><span>05</span> Emergency stop</button>
+  </div>
+  <div class="rail-note"><div class="orbit">◎</div><b>Learn through failure.</b><p>Introduce a fault. Observe the response. Review the evidence.</p></div>
+  <div class="rail-footer"><span class="live-dot"></span> SIMULATION ENVIRONMENT<br><small>Independent educational project · v0.1</small></div>
+</aside>
+<main>
+  <header><div class="breadcrumb">ENGINEERING LAB <span>/</span> TWIN-JET PROPULSION</div><div class="top-right"><span id="connection" class="connection">Connecting…</span><span class="sim-chip">SIMULATION ONLY</span></div></header>
+  <section class="title-row"><div><p class="eyebrow">CONTROL · DIAGNOSTICS · VERIFICATION</p><h1>Vessel control console<span>.</span></h1><p class="intro">A clear view of every command and its consequence.</p></div><div class="title-actions"><button id="pause" class="quiet">Ⅱ Pause</button><button id="export" class="quiet">↓ Export CSV</button></div></section>
+  <div id="notice" class="notice" role="status">Start with a scenario, or arm the controller and run it manually.</div>
+  <section class="metrics" aria-label="Vessel telemetry">
+    <article><div class="metric-label">VESSEL SPEED <span>↗</span></div><div class="metric-value"><b id="speed">0.00</b><small>kn</small></div><div class="metric-foot">Speed through the simulated water</div></article>
+    <article><div class="metric-label">HEADING <span>⌖</span></div><div class="metric-value"><b id="heading">000.0</b><small>°</small></div><div id="heading-detail" class="metric-foot">Manual control</div></article>
+    <article id="pressure-card"><div class="metric-label">HYDRAULIC PRESSURE <span>◉</span></div><div class="metric-value"><b id="pressure">110</b><small>bar</small></div><div class="metric-foot">Trip threshold &lt; 60 bar</div></article>
+    <article id="temp-card"><div class="metric-label">OIL TEMPERATURE <span>♧</span></div><div class="metric-value"><b id="temperature">46.0</b><small>°C</small></div><div class="metric-foot">Trip threshold ≥ 85 °C</div></article>
+  </section>
+  <div class="workspace-grid">
+    <section class="panel chart-panel"><div class="panel-heading"><div><h2>Manoeuvring view</h2><p>Relative position · metres</p></div><div class="chart-legend"><i></i> Vessel trail <span id="elapsed">00:00.0</span></div></div><canvas id="sea" aria-label="Animated top-down vessel and trajectory"></canvas><div class="chart-footer"><span><i class="live-dot"></i> LOCAL SIMULATION</span><span>50 ms fixed scan · clock follows simulation steps</span></div></section>
+    <section class="panel operator"><div class="panel-heading"><div><h2>Operator station</h2><p>Arm → run → command</p></div><span id="mode" class="mode">DISARMED</span></div>
+      <div class="mode-switch"><button id="manual-mode" class="selected">Manual</button><button id="heading-mode">Heading hold</button></div>
+      <div class="control-line"><label for="surge">Thrust demand</label><output id="surge-value">0%</output></div><input id="surge" type="range" min="-100" max="100" value="0"><div class="range-labels"><span>ASTERN</span><span>NEUTRAL</span><span>AHEAD</span></div>
+      <div id="turn-control"><div class="control-line"><label for="turn">Turn demand</label><output id="turn-value">0%</output></div><input id="turn" type="range" min="-100" max="100" value="0"><div class="range-labels"><span>PORT</span><span>STARBOARD</span></div></div>
+      <div id="heading-control" hidden><div class="control-line"><label for="target-heading">Target heading</label><output id="target-value">030°</output></div><input id="target-heading" type="range" min="0" max="359" value="30"></div>
+      <div class="control-buttons"><button data-action="arm">Arm</button><button data-action="run" class="primary">Run</button><button data-action="stop">Stop</button><button id="neutral">Neutral</button></div>
+      <button data-action="estop" class="estop">■ EMERGENCY STOP</button><div class="recovery"><button data-action="release_estop">Release stop</button><button data-action="reset">Reset fault</button></div>
+      <p class="hint">Reset requires healthy inputs and neutral controls. Releasing the stop never restarts the vessel.</p>
+    </section>
+    <section class="panel feedback"><div class="panel-heading"><div><h2>Actuator feedback</h2><p>Signed thrust · demand vs. simulated response</p></div><span class="subtle">PORT / STARBOARD</span></div><div class="jet-grid"><div><div class="jet-title">PORT JET <b id="port-number">0%</b></div><div class="jet-meter"><div id="port-bar"></div><i></i></div><div class="jet-bottom"><span id="port-demand">Demand 0%</span><b id="port-direction">NEUTRAL</b></div></div><div><div class="jet-title">STARBOARD JET <b id="starboard-number">0%</b></div><div class="jet-meter"><div id="starboard-bar"></div><i></i></div><div class="jet-bottom"><span id="starboard-demand">Demand 0%</span><b id="starboard-direction">NEUTRAL</b></div></div></div></section>
+    <section class="panel faults"><div class="panel-heading"><div><h2>Fault injection</h2><p>Introduce one fault and observe the controller</p></div></div><div class="fault-list"><label><input type="checkbox" data-fault="low_pressure"><span>Low hydraulic pressure</span></label><label><input type="checkbox" data-fault="overheat"><span>Oil over-temperature</span></label><label><input type="checkbox" data-fault="comms_loss"><span>Command link lost</span></label><label><input type="checkbox" data-fault="sensor_dropout"><span>Sensor updates lost</span></label><label><input type="checkbox" data-fault="port_stuck"><span>Port actuator stuck</span></label></div></section>
+    <section class="panel trends"><div class="panel-heading"><div><h2>Response trend</h2><p>Last 60 seconds · thrust feedback</p></div><div class="trend-key"><i></i> Port <i></i> Starboard</div></div><canvas id="trend" aria-label="Port and starboard thrust history"></canvas></section>
+    <section class="panel events"><div class="panel-heading"><div><h2>Event journal</h2><p>Timestamped transitions and operator actions</p></div><span id="event-count" class="count">1</span></div><div id="event-list" role="log" aria-live="polite"></div></section>
+  </div>
+  <footer><b>Waterjet Control Lab</b><span>Simplified physics · virtual sensors · no hardware connection</span><a href="/api/docs" target="_blank" rel="noopener">API reference ↗</a></footer>
+</main>
+</body></html>

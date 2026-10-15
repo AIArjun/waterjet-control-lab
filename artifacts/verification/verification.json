@@ -1,0 +1,114 @@
+{
+  "version": "0.1.0",
+  "environment": {
+    "python": "3.13.1",
+    "platform": "Windows-11-10.0.26300-SP0"
+  },
+  "scope": "Deterministic software simulation only; no real-time, hardware or vessel validation",
+  "scan_period_s": 0.05,
+  "parameters": {
+    "mass_kg": 2200.0,
+    "yaw_inertia_kgm2": 5500.0,
+    "max_jet_force_n": 6000.0,
+    "jet_half_spacing_m": 0.85,
+    "jet_stern_offset_m": 2.0,
+    "actuator_rate_per_s": 1.2,
+    "thrust_rate_per_s": 0.8,
+    "pressure_trip_bar": 60.0,
+    "temperature_trip_c": 85.0,
+    "jam_delay_s": 0.6
+  },
+  "checks": [
+    {
+      "scenario": "Heading hold across north",
+      "passed": true,
+      "measurements": {
+        "duration_s": 60.0,
+        "target_deg": 30,
+        "final_heading_deg": 31.047708428190813,
+        "absolute_error_deg": 1.0477084281908162,
+        "wind_east_n": 100,
+        "acceptance_error_deg": 2
+      }
+    },
+    {
+      "scenario": "low_pressure",
+      "passed": true,
+      "measurements": {
+        "fault_response_s": 0.05,
+        "alarm": [
+          "LOW_PRESSURE"
+        ],
+        "port_output": 0.0,
+        "starboard_output": 0.0
+      }
+    },
+    {
+      "scenario": "overheat",
+      "passed": true,
+      "measurements": {
+        "fault_response_s": 0.05,
+        "alarm": [
+          "OVER_TEMPERATURE"
+        ],
+        "port_output": 0.0,
+        "starboard_output": 0.0
+      }
+    },
+    {
+      "scenario": "comms_loss",
+      "passed": true,
+      "measurements": {
+        "fault_response_s": 0.7,
+        "alarm": [
+          "COMMAND_STALE"
+        ],
+        "port_output": 0.0,
+        "starboard_output": 0.0
+      }
+    },
+    {
+      "scenario": "sensor_dropout",
+      "passed": true,
+      "measurements": {
+        "fault_response_s": 0.25,
+        "alarm": [
+          "SENSOR_STALE"
+        ],
+        "port_output": 0.0,
+        "starboard_output": 0.0
+      }
+    },
+    {
+      "scenario": "port_stuck",
+      "passed": true,
+      "measurements": {
+        "fault_response_s": 0.85,
+        "alarm": [
+          "PORT_ACTUATOR_MISMATCH"
+        ],
+        "port_output": 0.0,
+        "starboard_output": 0.0
+      }
+    },
+    {
+      "scenario": "Emergency stop recovery",
+      "passed": true,
+      "measurements": {
+        "mode_after_release": "E_STOP",
+        "mode_after_reset": "DISARMED",
+        "automatic_restart": false
+      }
+    }
+  ],
+  "all_passed": true,
+  "trace_sha256": {
+    "heading-hold.csv": "c7599ddf7a0122fbbb237df0dade727ff3cbad8f22480e65765eb69c083a4432",
+    "low_pressure.csv": "5dbcbbea6b167e163443fe28ecae5352427a6f916c535e0d7f5b3af9747e2e27",
+    "overheat.csv": "5a43fda2dcc143c6e4ee2ef4e3cb45c44df3a065c3c56b101afb0351274658ee",
+    "comms_loss.csv": "d98ab521c2e7e3bea49ca5e429de79d328812fb40b205515612fc4745fbfecd5",
+    "sensor_dropout.csv": "96cbd2cfeeb74a490fe779aa22918bcd0ca7a0242512bc6f2d4eec1cbb4e8d3f",
+    "port_stuck.csv": "a2ca1a003931b51f16cca82a61ff447cd4929c06978b123365bdc0da6de937c1",
+    "emergency-stop.csv": "0c065d65c070425f23931ac79abcb66e25851d18ab123e3714a2f0a289198966"
+  }
+}

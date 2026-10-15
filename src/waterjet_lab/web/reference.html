@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>API reference · Waterjet Control Lab</title><link rel="stylesheet" href="/static/style.css"></head><body>
+<main class="reference">
+<header><a href="/">← Operator console</a><span class="sim-chip">SIMULATION ONLY</span></header>
+<section class="title-row"><div><p class="eyebrow">DEVELOPER REFERENCE</p><h1>Simulation API.</h1><p class="intro">One isolated, temporary simulation per anonymous session.</p></div></section>
+<div class="notice">The client advances simulation time explicitly. This API has no hardware interface and does not provide a wall-clock control service.</div>
+<section class="panel reference-body"><h2>Start a session</h2><pre>POST /api/sessions
+→ {"session_id": "…", "state": {…}, "scenarios": {…}}</pre>
+<p>Use the returned ID for every request below. It acts as a temporary capability: do not share it. Sessions expire after 30 minutes of inactivity. The demonstration accepts at most 64 sessions.</p>
+<h2>Advance the controller</h2><pre>POST /api/sessions/{id}/tick
+{"command":{"surge":0.0,"turn":0.0,"control":"manual","heading_deg":0},"scans":2}</pre><p>Each scan is 50 ms of simulation time. The scan count is an integer from 1 to 20. Surge and turn are normalized to [-1, 1]. Heading is [0, 360). Control mode is manual or heading. The command heartbeat is received once before the requested scans.</p>
+<h2>Operator actions</h2><pre>POST /api/sessions/{id}/action
+{"action":"arm"}</pre><p>Allowed actions: arm, run, stop, reset, estop, release_estop. Check the returned accepted flag and state. Rejected actions do not bypass the controller's interlocks.</p>
+<h2>Faults and scenarios</h2><pre>POST /api/sessions/{id}/fault
+{"fault":"low_pressure","enabled":true}
+
+POST /api/sessions/{id}/scenario
+{"name":"heading"}
+
+POST /api/sessions/{id}/wind
+{"east_n":100,"north_n":0}</pre><p>Faults: low_pressure, overheat, comms_loss, sensor_dropout, port_stuck. Scenarios: harbor, heading, pressure, watchdog, estop. Wind components are bounded to ±1000 N. Loading a scenario replaces only that session's simulation.</p>
+<h2>Read and export</h2><pre>GET    /api/sessions/{id}
+GET    /api/sessions/{id}/history
+GET    /api/sessions/{id}/export.csv
+DELETE /api/sessions/{id}
+GET    /healthz</pre><p>Telemetry is retained at 10 Hz for approximately ten minutes. Exports also include the current state, including a trip between scheduled samples. The event journal holds the most recent 200 events.</p><p><a href="/openapi.json">Download the complete OpenAPI schema →</a></p>
+</section><footer>Waterjet Control Lab · version 0.1 · educational simulator</footer></main></body></html>

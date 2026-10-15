@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: waterjet-control-lab
+    runtime: python
+    plan: free
+    region: frankfurt
+    buildCommand: pip install -r requirements-web.txt && pip install --no-deps .
+    startCommand: waterjet-lab
+    healthCheckPath: /healthz
+    autoDeployTrigger: "off"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.13.1
+      - key: HOST
+        value: 0.0.0.0

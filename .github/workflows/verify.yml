@@ -1,0 +1,54 @@
+name: Verify simulator
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 12
+    env:
+      QT_QPA_PLATFORM: offscreen
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: '3.13'
+          cache: pip
+          cache-dependency-path: requirements-*.txt
+      - name: Qt libraries on Linux
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y libegl1 libopengl0 libxkbcommon0 fonts-dejavu-core
+      - name: Install tested dependencies
+        run: python -m pip install -r requirements-dev.txt
+      - name: Install project
+        run: python -m pip install --no-deps -e .
+      - name: Lint
+        run: python -m ruff check .
+      - name: Formatting
+        run: python -m ruff format --check .
+      - name: JavaScript syntax
+        run: node --check src/waterjet_lab/web/app.js
+      - name: Tests
+        run: python -m pytest -q --junitxml=artifacts/ci-tests.xml
+      - name: Measured scenarios
+        run: python -m waterjet_lab.verification --output artifacts/ci-verification
+      - name: Native Qt render
+        run: python -m waterjet_lab.desktop --screenshot artifacts/ci-native-qt.png
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        with:
+          name: verification-${{ runner.os }}
+          path: |
+            artifacts/ci-tests.xml
+            artifacts/ci-verification
+            artifacts/ci-native-qt.png
+          retention-days: 14
